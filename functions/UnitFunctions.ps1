@@ -415,7 +415,7 @@ function Get-CapaUnitBitLocker
 	}
 	Process
 	{
-		Get-CapaUnit -UnitType Computer | ? {$_.UnitName -match $UnitName} | ForEach-Object -Process {
+		Get-CapaUnit -UnitType Computer | Where-Object {$_.UnitName -match $UnitName} | ForEach-Object -Process {
 			$UnitNameL = $_.UnitName
 			$Software = $CapaCom.GetCustomInventoryForUnit("$UnitNameL", "Computer")
 			$softwarelist = $Software -split "`r`n"
@@ -466,7 +466,7 @@ function Get-CapaUnitOld
 	}
 	Process
 	{
-        $OldList = Get-CapaUnit -UnitType Computer | ? {$_.UnitLastExecuted -lt $Compare} | select Unitname, UnitCreated, Unitlastexecuted
+        $OldList = Get-CapaUnit -UnitType Computer | Where-Object {$_.UnitLastExecuted -lt $Compare} | Select-Object Unitname, UnitCreated, Unitlastexecuted
         foreach ($computer in $OldList) {
             try {
                 $adcomputer = (Get-ADComputer $computer.Unitname -Properties LastLogonDate).LastLogonDate
