@@ -18,7 +18,7 @@
 ModuleToProcess = 'CapaPosh.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0.0'
+ModuleVersion = '1.0.0.1'
 
 # ID used to uniquely identify this module
 GUID = 'da5e4404-95ba-4786-ae4f-da235cfdea6b'
