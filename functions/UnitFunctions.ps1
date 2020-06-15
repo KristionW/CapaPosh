@@ -399,68 +399,18 @@ function Remove-CapaUnitFromGroup
 	}
 }
 
-function Get-CapaUnitBitLocker
-{
-	[CmdletBinding()]
-	param
-	(
-        [Parameter(Mandatory = $false)]
-		[string]$UnitName
-	)
-	
-	Begin
-	{
-		$CapaCom = New-Object -ComObject CapaInstaller.SDK
-		$CapaCustom = @()
-	}
-	Process
-	{
-		Get-CapaUnit -UnitType Computer | Where-Object {$_.UnitName -match $UnitName} | ForEach-Object -Process {
-			$UnitNameL = $_.UnitName
-			$Software = $CapaCom.GetCustomInventoryForUnit("$UnitNameL", "Computer")
-			$softwarelist = $Software -split "`r`n"
-	
-			$softwarelist | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
-					If ($Splitline[0] -match "Bitlocker") {
-						$CapaCustom += [pscustomobject][ordered] @{
-							UnitName = $UnitNameL
-							BitlockerKey = $SplitLine[2]
-						}
-					}
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
-				}
-			}
-		}
-	}
-	End
-	{
-		Return $CapaCustom
-		$CapaCom = $null
-		Remove-Variable -Name CapaCom
-	}
-}
-
 function Get-CapaUnitOld 
 {
+	#Needs an option to choose time scope
 	[CmdletBinding()]
 	param
 	(
         [Parameter(Mandatory = $false)]
-        [switch]$Export,
-        [Parameter(Mandatory = $false)]
-        [string]$ExportPath="\\grdk1-sv-fs01\ge_folders\it\CSV\CapaUnitsTemp.xlsx"
+        [string]$ExportPath=""
 	)
 	
 	Begin
 	{
-        Import-Module ImportExcel
 		$FinalList = @()
         $Compare = (Get-Date).AddDays(-100)
 	}
@@ -482,11 +432,10 @@ function Get-CapaUnitOld
     }
     End
     {
-        If ($Export -or $ExportPath -ne "\\grdk1-sv-fs01\ge_folders\it\CSV\CapaUnitsTemp.xlsx")
+        If ($ExportPath -ne "")
         {
-            $FinalList | Export-Excel -path $ExportPath -WorksheetName Main
+            $FinalList | Export-CSV -path $ExportPath -Encoding UTF8 -Delimiter ";" -NoTypeInformation
         }
         return $FinalList
 	}
- #just testing #3
 }
