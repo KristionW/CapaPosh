@@ -398,3 +398,94 @@ function Remove-CapaUnitFromGroup
 		Remove-Variable -Name CapaCom
 	}
 }
+
+function Get-CapaUnitBitLocker
+{
+	[CmdletBinding()]
+	param
+	(
+        [Parameter(Mandatory = $false)]
+		[string]$UnitName
+	)
+	
+	Begin
+	{
+		$CapaCom = New-Object -ComObject CapaInstaller.SDK
+		$CapaCustom = @()
+	}
+	Process
+	{
+		Get-CapaUnit -UnitType Computer | ? {$_.UnitName -match $UnitName} | ForEach-Object -Process {
+			$UnitNameL = $_.UnitName
+			$Software = $CapaCom.GetCustomInventoryForUnit("$UnitNameL", "Computer")
+			$softwarelist = $Software -split "`r`n"
+	
+			$softwarelist | ForEach-Object -Process {
+				$SplitLine = ($_).split('|')
+				
+				Try
+				{
+					If ($Splitline[0] -match "Bitlocker") {
+						$CapaCustom += [pscustomobject][ordered] @{
+							UnitName = $UnitNameL
+							BitlockerKey = $SplitLine[2]
+						}
+					}
+				}
+				Catch
+				{
+					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+				}
+			}
+		}
+	}
+	End
+	{
+		Return $CapaCustom
+		$CapaCom = $null
+		Remove-Variable -Name CapaCom
+	}
+}
+
+function Get-CapaUnitOld 
+{
+	[CmdletBinding()]
+	param
+	(
+        [Parameter(Mandatory = $false)]
+        [switch]$Export,
+        [Parameter(Mandatory = $false)]
+        [string]$ExportPath="\\grdk1-sv-fs01\ge_folders\it\CSV\CapaUnitsTemp.xlsx"
+	)
+	
+	Begin
+	{
+        Import-Module ImportExcel
+		$FinalList = @()
+        $Compare = (Get-Date).AddDays(-100)
+	}
+	Process
+	{
+        $OldList = Get-CapaUnit -UnitType Computer | ? {$_.UnitLastExecuted -lt $Compare} | select Unitname, UnitCreated, Unitlastexecuted
+        foreach ($computer in $OldList) {
+            try {
+                $adcomputer = (Get-ADComputer $computer.Unitname -Properties LastLogonDate).LastLogonDate
+            } 
+            Catch{$adcomputer = $null}
+
+                $FinalList += [pscustomobject][ordered] @{
+				    Name = $computer.Unitname
+				    LastRunCapa = $computer.UnitLastExecuted
+                    LastLogonAD = $adcomputer
+				}
+            }
+    }
+    End
+    {
+        If ($Export -or $ExportPath -ne "\\grdk1-sv-fs01\ge_folders\it\CSV\CapaUnitsTemp.xlsx")
+        {
+            $FinalList | Export-Excel -path $ExportPath -WorksheetName Main
+        }
+        return $FinalList
+    }
+}
