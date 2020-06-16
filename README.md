@@ -33,12 +33,10 @@ The following functions are currently available:
 
     New in 1.0.0.1
     Get-CapaUnitHardwareInventory
-    Get-CapaUnitOld
     Get-CapaUnitSoftwareInventory
     Get-CapaUnitUpdatesInventory
     Get-CapaUnitLogonHistory
     Get-CapaUserInventory
-    Get-CapaUnitBitLocker
     
 Not all of these cmdlets can be mapped 1:1 to a Capa SDK function, some are helper functions to extend functionality of the Capa SDK.
 
