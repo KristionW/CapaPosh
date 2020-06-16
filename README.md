@@ -30,6 +30,13 @@ The following functions are currently available:
     Set-CapaUnitPackageStatus
     Set-UnitPackageStatus
     Update-CapaPackageCisVersion
+
+    New in 1.0.0.1
+    Get-CapaUnitHardwareInventory
+    Get-CapaUnitSoftwareInventory
+    Get-CapaUnitUpdatesInventory
+    Get-CapaUnitLogonHistory
+    Get-CapaUserInventory
     
 Not all of these cmdlets can be mapped 1:1 to a Capa SDK function, some are helper functions to extend functionality of the Capa SDK.
 

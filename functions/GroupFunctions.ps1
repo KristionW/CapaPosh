@@ -113,11 +113,3 @@ function Get-CapaGroup
     Return $CapaGroups
   }
 }
-
-
-if ($(Get-CapaGroup -GroupType Static | Select -ExpandProperty GroupName) -contains 'Skade') {"hurra"}
-
-
-Get-CapaGroup  | where GroupName -Match 'early'
-
-Invoke-Sqlcmd -Database CapaDB -ServerInstance apsql2008ny -Query 'select * from UNITGRP'
