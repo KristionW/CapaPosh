@@ -399,6 +399,7 @@ function Remove-CapaUnitFromGroup
 	}
 }
 
+
 function Get-CapaUnitOld 
 {
 	#Needs an option to choose time scope

@@ -168,10 +168,7 @@ Function Get-CapaUnitLogonHistory
 				Try
 				{
 
-                    if ($SplitLine[1] -match "time")
-                    {
-                        $SplitLine[2] = [DateTime]::FromFileTime($SplitLine[2])
-                    }
+
                     $CapaLogon += [pscustomobject][ordered] @{
                         Category = $SplitLine[1]
                         Value = $SplitLine[2]
@@ -180,6 +177,13 @@ Function Get-CapaUnitLogonHistory
 				Catch
 				{
 					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+				}
+			}
+
+			$CapaLogon | ForEach-Object -Process {
+				if ($_.Category -match "time" -or $_.Category -match "Inventory Collected")
+				{
+					$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
 				}
 			}
 		
@@ -192,6 +196,65 @@ Function Get-CapaUnitLogonHistory
 	}
 }
 
+
+Function Get-CapaUserInventory
+{
+
+	[CmdletBinding()]
+	param
+	(
+        [Parameter(Mandatory = $true)]
+        [string]$UserName
+	)
+	
+	Begin
+	{
+		$CapaCom = New-Object -ComObject CapaInstaller.SDK
+		$CapaUser = @()
+	}
+	Process
+	{
+			$User = $CapaCom.GetUserInventory("$UserName")
+			$UserList = $User -split "`r`n"
+	
+			$UserList | ForEach-Object -Process {
+				$SplitLine = ($_).split('|')
+
+				$SplitLine | ForEach-Object -Process {
+					
+				}
+				
+				
+
+				Try
+				{
+                    $CapaUser += [pscustomobject][ordered] @{
+                        Entry = $SplitLine[1]
+                        Value = $SplitLine[2]
+					}
+				}
+				Catch
+				{
+					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+				}
+			}
+
+			$CapaUser | ForEach-Object -Process {
+				if ($_.Entry -match "Password last changed" -or $_.entry -match "Last failed login time" -or $_.Entry -match "Account expire date" -or $_.Entry -match "Inventory collected" -and $_.Value -ne "")
+				{
+					$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
+				}
+			}
+		
+	}
+	End
+	{
+		Return $CapaUser
+		$CapaCom = $null
+		Remove-Variable -Name CapaCom
+	}
+
+}
 
 function Get-CapaUnitBitLocker
 {
@@ -213,7 +276,7 @@ function Get-CapaUnitBitLocker
 			$UnitNameL = $_.UnitName
 			$Custom = $CapaCom.GetCustomInventoryForUnit("$UnitNameL", "Computer")
 			$CustomList = $Custom -split "`r`n"
-	
+			
 			$CustomList | ForEach-Object -Process {
 				$SplitLine = ($_).split('|')
 				
