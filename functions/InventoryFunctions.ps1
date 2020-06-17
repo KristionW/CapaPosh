@@ -24,7 +24,7 @@ function Get-CapaUnitHardwareInventory
 				
 				Try
 				{
-                    $CapaCustom += [pscustomobject][ordered] @{
+                    $Capahardware += [pscustomobject][ordered] @{
                         Category = $SplitLine[0]
                         Entry = $SplitLine[1]
                         Value = $SplitLine[2]
@@ -32,7 +32,7 @@ function Get-CapaUnitHardwareInventory
 				}
 				Catch
 				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
 				}
 			}
 		
@@ -79,7 +79,7 @@ Function Get-CapaUnitSoftwareInventory
 				}
 				Catch
 				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
 				}
 			}
 		
@@ -128,7 +128,7 @@ Function Get-CapaUnitUpdatesInventory
 				}
 				Catch
 				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
 				}
 			}
 		
@@ -176,7 +176,7 @@ Function Get-CapaUnitLogonHistory
 				}
 				Catch
 				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
 				}
 			}
 
@@ -235,7 +235,7 @@ Function Get-CapaUserInventory
 				}
 				Catch
 				{
-					Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
+					Write-Warning -Message "An error occured for Category: $($SplitLine[0]) "
 				}
 			}
 
