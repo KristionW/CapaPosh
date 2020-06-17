@@ -39,7 +39,7 @@ function Get-CapaUnitHardwareInventory
 	}
 	End
 	{
-		Return $Capahardware | Where-Object {$_.Category -match $Category} | Format-Table
+		Return $Capahardware | Where-Object {$_.Category -match $Category}
 		$CapaCom = $null
 		Remove-Variable -Name CapaCom
 	}
@@ -71,10 +71,10 @@ Function Get-CapaUnitSoftwareInventory
 				
 				Try
 				{
-                    $CapaCustom += [pscustomobject][ordered] @{
+                    $CapaSoftware += [pscustomobject][ordered] @{
                         SoftwareName = $SplitLine[0]
-                        Entry = $SplitLine[1]
-                        Value = $SplitLine[2]
+                        Version = $SplitLine[1]
+                        InstallDate = $SplitLine[2]
                     }
 				}
 				Catch
@@ -86,7 +86,7 @@ Function Get-CapaUnitSoftwareInventory
 	}
 	End
 	{
-		Return $CapaSoftware | Where-Object {$_.SoftwareName -match $SoftwareName} | Format-Table
+		Return $CapaSoftware | Where-Object {$_.SoftwareName -match $SoftwareName}
 		$CapaCom = $null
 		Remove-Variable -Name CapaCom
 	}
