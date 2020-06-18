@@ -418,28 +418,27 @@ Function Get-CapaUnitRelations
 	}
 	Process
 	{
-			$Relations = $CapaCom.GetUnitRelations("$UnitName", "$UnitType")
-			$RelationList = $Relations -split "`r`n"
-	
-			$RelationList | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
+		$Relations = $CapaCom.GetUnitRelations("$UnitName", "$UnitType")
+		$RelationList = $Relations -split "`r`n"
+
+		$RelationList | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
+			
+			Try
+			{
 
 
-                    $CapaRelations += [pscustomobject][ordered] @{
-                        RelationType = $SplitLine[0]
-						Name = $SplitLine[1]
-						Created = $SplitLine[2]
-                    }
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for Unit: $($SplitLine[1]) "
+				$CapaRelations += [pscustomobject][ordered] @{
+					RelationType = $SplitLine[0]
+					Name = $SplitLine[1]
+					Created = $SplitLine[2]
 				}
 			}
-		
+			Catch
+			{
+				Write-Warning -Message "An error occured for Unit: $($SplitLine[1]) "
+			}
+		}
 	}
 	End
 	{

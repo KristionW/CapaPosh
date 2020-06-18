@@ -16,26 +16,25 @@ function Get-CapaUnitHardwareInventory
 	}
 	Process
 	{
-			$Hardware = $CapaCom.GetHardwareInventoryForUnit("$UnitName", "Computer")
-			$Hardwarelist = $Hardware -split "`r`n"
-	
-			$Hardwarelist | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
-                    $Capahardware += [pscustomobject][ordered] @{
-                        Category = $SplitLine[0]
-                        Entry = $SplitLine[1]
-                        Value = $SplitLine[2]
-                    }
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+		$Hardware = $CapaCom.GetHardwareInventoryForUnit("$UnitName", "Computer")
+		$Hardwarelist = $Hardware -split "`r`n"
+
+		$Hardwarelist | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
+			
+			Try
+			{
+				$Capahardware += [pscustomobject][ordered] @{
+					Category = $SplitLine[0]
+					Entry = $SplitLine[1]
+					Value = $SplitLine[2]
 				}
 			}
-		
+			Catch
+			{
+				Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+			}
+		}
 	}
 	End
 	{
@@ -63,26 +62,25 @@ Function Get-CapaUnitSoftwareInventory
 	}
 	Process
 	{
-			$Software = $CapaCom.GetSoftwareInventoryForUnit("$UnitName", "Computer")
-			$softwarelist = $Software -split "`r`n"
-	
-			$softwarelist | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
-                    $CapaSoftware += [pscustomobject][ordered] @{
-                        SoftwareName = $SplitLine[0]
-                        Version = $SplitLine[1]
-                        InstallDate = $SplitLine[2]
-                    }
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+		$Software = $CapaCom.GetSoftwareInventoryForUnit("$UnitName", "Computer")
+		$softwarelist = $Software -split "`r`n"
+
+		$softwarelist | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
+			
+			Try
+			{
+				$CapaSoftware += [pscustomobject][ordered] @{
+					SoftwareName = $SplitLine[0]
+					Version = $SplitLine[1]
+					InstallDate = $SplitLine[2]
 				}
 			}
-		
+			Catch
+			{
+				Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+			}
+		}
 	}
 	End
 	{
@@ -112,26 +110,25 @@ Function Get-CapaUnitUpdatesInventory
 	}
 	Process
 	{
-			$Updates = $CapaCom.GetUpdateInventoryForUnit("$UnitName", "Computer")
-			$UpdatesList = $Updates -split "`r`n"
-	
-			$UpdatesList | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
-                    $CapaUpdates += [pscustomobject][ordered] @{
-                        UpdateName = $SplitLine[3]
-                        Status = $SplitLine[6]
-                        InstallDate = $SplitLine[1]
-                    }
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+		$Updates = $CapaCom.GetUpdateInventoryForUnit("$UnitName", "Computer")
+		$UpdatesList = $Updates -split "`r`n"
+
+		$UpdatesList | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
+			
+			Try
+			{
+				$CapaUpdates += [pscustomobject][ordered] @{
+					UpdateName = $SplitLine[3]
+					Status = $SplitLine[6]
+					InstallDate = $SplitLine[1]
 				}
 			}
-		
+			Catch
+			{
+				Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+			}
+		}
 	}
 	End
 	{
@@ -159,34 +156,33 @@ Function Get-CapaUnitLogonHistory
 	}
 	Process
 	{
-			$Login = $CapaCom.GetLogonHistoryForUnit("$UnitName", "1")
-			$LoginList = $Login -split "`r`n"
-	
-			$LoginList | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
-				
-				Try
-				{
+		$Login = $CapaCom.GetLogonHistoryForUnit("$UnitName", "1")
+		$LoginList = $Login -split "`r`n"
+
+		$LoginList | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
+			
+			Try
+			{
 
 
-                    $CapaLogon += [pscustomobject][ordered] @{
-                        Category = $SplitLine[1]
-                        Value = $SplitLine[2]
-                    }
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
+				$CapaLogon += [pscustomobject][ordered] @{
+					Category = $SplitLine[1]
+					Value = $SplitLine[2]
 				}
 			}
-
-			$CapaLogon | ForEach-Object -Process {
-				if ($_.Category -match "time" -or $_.Category -match "Inventory Collected")
-				{
-					$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
-				}
+			Catch
+			{
+				Write-Warning -Message "An error occured for category: $($SplitLine[0]) "
 			}
-		
+		}
+
+		$CapaLogon | ForEach-Object -Process {
+			if ($_.Category -match "time" -or $_.Category -match "Inventory Collected")
+			{
+				$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
+			}
+		}
 	}
 	End
 	{
@@ -214,38 +210,37 @@ Function Get-CapaUserInventory
 	}
 	Process
 	{
-			$User = $CapaCom.GetUserInventory("$UserName")
-			$UserList = $User -split "`r`n"
-	
-			$UserList | ForEach-Object -Process {
-				$SplitLine = ($_).split('|')
+		$User = $CapaCom.GetUserInventory("$UserName")
+		$UserList = $User -split "`r`n"
 
-				$SplitLine | ForEach-Object -Process {
-					
-				}
-				
-				
+		$UserList | ForEach-Object -Process {
+			$SplitLine = ($_).split('|')
 
-				Try
-				{
-                    $CapaUser += [pscustomobject][ordered] @{
-                        Entry = $SplitLine[1]
-                        Value = $SplitLine[2]
-					}
-				}
-				Catch
-				{
-					Write-Warning -Message "An error occured for Category: $($SplitLine[0]) "
+			$SplitLine | ForEach-Object -Process {
+				
+			}
+			
+			
+
+			Try
+			{
+				$CapaUser += [pscustomobject][ordered] @{
+					Entry = $SplitLine[1]
+					Value = $SplitLine[2]
 				}
 			}
-
-			$CapaUser | ForEach-Object -Process {
-				if ($_.Entry -match "Password last changed" -or $_.entry -match "Last failed login time" -or $_.Entry -match "Account expire date" -or $_.Entry -match "Inventory collected" -and $_.Value -ne "")
-				{
-					$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
-				}
+			Catch
+			{
+				Write-Warning -Message "An error occured for Category: $($SplitLine[0]) "
 			}
-		
+		}
+
+		$CapaUser | ForEach-Object -Process {
+			if ($_.Entry -match "Password last changed" -or $_.entry -match "Last failed login time" -or $_.Entry -match "Account expire date" -or $_.Entry -match "Inventory collected" -and $_.Value -ne "")
+			{
+				$_.Value = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($_.Value))
+			}
+		}
 	}
 	End
 	{
