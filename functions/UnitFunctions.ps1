@@ -408,6 +408,7 @@ Function Get-CapaUnitRelations
         [Parameter(Mandatory = $true)]
 		[string]$UnitName,
 		[Parameter(Mandatory = $true)]
+		[ValidateSet('User', 'Computer')]
         [string]$UnitType
 	)
 	
