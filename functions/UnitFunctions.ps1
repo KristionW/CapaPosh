@@ -431,7 +431,7 @@ Function Get-CapaUnitRelations
                     $CapaRelations += [pscustomobject][ordered] @{
                         RelationType = $SplitLine[0]
 						Name = $SplitLine[1]
-						Created = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($SplitLine[2]))
+						Created = $SplitLine[2]
                     }
 				}
 				Catch
