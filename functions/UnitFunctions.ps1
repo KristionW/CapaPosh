@@ -399,44 +399,52 @@ function Remove-CapaUnitFromGroup
 	}
 }
 
-
-function Get-CapaUnitOld 
+Function Get-CapaUnitRelations
 {
-	#Needs an option to choose time scope
+
 	[CmdletBinding()]
 	param
 	(
-        [Parameter(Mandatory = $false)]
-        [string]$ExportPath=""
+        [Parameter(Mandatory = $true)]
+		[string]$UnitName,
+		[Parameter(Mandatory = $true)]
+        [string]$UnitType
 	)
 	
 	Begin
 	{
-		$FinalList = @()
-        $Compare = (Get-Date).AddDays(-100)
+		$CapaCom = New-Object -ComObject CapaInstaller.SDK
+		$CapaRelations = @()
 	}
 	Process
 	{
-        $OldList = Get-CapaUnit -UnitType Computer | Where-Object {$_.UnitLastExecuted -lt $Compare} | Select-Object Unitname, UnitCreated, Unitlastexecuted
-        foreach ($computer in $OldList) {
-            try {
-                $adcomputer = (Get-ADComputer $computer.Unitname -Properties LastLogonDate).LastLogonDate
-            } 
-            Catch{$adcomputer = $null}
+			$Relations = $CapaCom.GetUnitRelations("$UnitName", "$UnitType")
+			$RelationList = $Relations -split "`r`n"
+	
+			$RelationList | ForEach-Object -Process {
+				$SplitLine = ($_).split('|')
+				
+				Try
+				{
 
-                $FinalList += [pscustomobject][ordered] @{
-				    Name = $computer.Unitname
-				    LastRunCapa = $computer.UnitLastExecuted
-                    LastLogonAD = $adcomputer
+
+                    $CapaRelations += [pscustomobject][ordered] @{
+                        RelationType = $SplitLine[0]
+						Name = $SplitLine[1]
+						Created = (Get-Date 01.01.1970)+([System.TimeSpan]::fromseconds($SplitLine[2]))
+                    }
 				}
-            }
-    }
-    End
-    {
-        If ($ExportPath -ne "")
-        {
-            $FinalList | Export-CSV -path $ExportPath -Encoding UTF8 -Delimiter ";" -NoTypeInformation
-        }
-        return $FinalList
+				Catch
+				{
+					Write-Warning -Message "An error occured for Unit: $($SplitLine[1]) "
+				}
+			}
+		
+	}
+	End
+	{
+		Return $CapaRelations
+		$CapaCom = $null
+		Remove-Variable -Name CapaCom
 	}
 }
