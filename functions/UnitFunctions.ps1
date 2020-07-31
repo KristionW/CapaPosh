@@ -448,3 +448,59 @@ Function Get-CapaUnitRelations
 		Remove-Variable -Name CapaCom
 	}
 }
+
+
+Function Remove-CapaUnit
+{
+
+	[CmdletBinding()]
+	param
+	(
+        [Parameter(Mandatory = $true)]
+		[string]$UnitName,
+		[Parameter(Mandatory = $true)]
+		[ValidateSet('User', 'Computer')]
+		[string]$UnitType,
+		[Parameter(Mandatory = $false)]
+		[switch]$Force
+	)
+	
+	Begin
+	{
+		$CapaCom = New-Object -ComObject CapaInstaller.SDK
+	}
+	Process
+	{
+		if (-not $Force)
+		{
+			while(1)
+			{
+				$validation = Read-Host -Prompt "Are you sure you want to permanently delete $UnitName? [Y|N]"
+				if ($validation -eq "n" -or $validation -eq "y")
+				{
+					if ($validation -eq "y")
+					{
+						$CapaCom.DeleteUnit($UnitName, $UnitType)
+						Write-Host "$UnitName has been deleted"
+					}
+					elseif ($validation -eq "n")
+					{
+						Write-Host "$UnitName was not deleted"
+					}
+					break
+				}
+				else 
+				{
+					Write-Host "Please Enter either 'Y' for yes or 'N' for no"
+				}
+			}
+		}
+
+		
+	}
+	End
+	{
+		$CapaCom = $null
+		Remove-Variable -Name CapaCom
+	}
+}
