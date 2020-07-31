@@ -250,3 +250,25 @@ function Clear-CapaPackage
     Write-Verbose -Message "Clearing out Kit Folder: $CMPFolderPath\$PackageName\$PackageVersion\kit\"
     Remove-Item -Path "$CMPFolderPath\$PackageName\$PackageVersion\kit\*" -Recurse -Force
 }
+
+
+function Remove-CapaPoshModule
+{
+    
+    $CapaPoshGE = get-module -list -Name CapaposhGE
+    if($CapaPoshGE)
+    {
+        $Path = $CapaPoshGE.Path.Substring(0, $CapaPoshGE.Path.Length - 22)
+        Remove-Item -Path $Path -Recurse -Force
+        Write-Host "Successfully removed CapaPoshGE module from $Path"
+    }
+
+    $CapaPosh = get-module -list -name CapaPosh
+    if ($CapaPosh)
+    {
+        $Path = $CapaPosh.Path.Substring(0, $CapaPosh.Path.Length - 22)
+        Remove-Item -Path $Path -Recurse -Force
+        Write-Host "Successfully removed CapaPosh module from $Path"
+    }
+
+}
