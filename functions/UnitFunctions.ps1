@@ -495,6 +495,9 @@ Function Remove-CapaUnit
 				}
 			}
 		}
+		elseif ($Force) {
+			$CapaCom.DeleteUnit($UnitName, $UnitType)
+		}
 
 		
 	}
