@@ -216,6 +216,8 @@ function Get-CapaUnit
 	param
 	(
 		[Parameter(Mandatory = $false)]
+		[string]$UnitName,
+		[Parameter(Mandatory = $false)]
 		[ValidateSet('Computer', 'User')]
 		[string]$UnitType
 	)
@@ -253,11 +255,22 @@ function Get-CapaUnit
 				Write-Warning -Message "An error occured for computer: $($SplitLine[0]) "
 			}
 		}
+		if ($null -ne $UnitName)
+		{
+			$UnitInfo = $CapaApps | ? {$_.UnitName -like "*$UnitName*"}
+		}
 		
 	}
 	End
 	{
-		Return $CapaApps
+		if ($null -eq $UnitInfo)
+		{
+			Return $CapaApps
+		}
+		else
+		{
+			Return $UnitInfo
+		}
 		$CapaCom = $null
 		Remove-Variable -Name CapaCom
 	}
